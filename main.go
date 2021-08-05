@@ -73,9 +73,10 @@ func main() {
 
 			readSinceLastInterval := currReadCount - lastReadCount
 			errSinceLastInterval := currErrCount - lastErrCount
+
 			var errRate float64
 			if readSinceLastInterval > 0 {
-				errRate = (float64(errSinceLastInterval) / float64(readSinceLastInterval)) * 100
+				errRate = (float64(errSinceLastInterval) / (float64(readSinceLastInterval) + float64(errSinceLastInterval))) * 100
 			}
 
 			fmt.Printf("messages read: %d\n", readSinceLastInterval)
@@ -86,12 +87,13 @@ func main() {
 	// Consume messages and update counters.
 	for {
 		_, err := c.ReadMessage(-1)
-		atomic.AddUint64(&readCount, 1)
 		if err != nil {
 			atomic.AddUint64(&errCount, 1)
-			// Sample errors.
-			if atomic.LoadUint64(&errCount)%20==0 {
+			// Sample print errors.
+			if atomic.LoadUint64(&errCount)%20 == 0 {
 				fmt.Println(err)
+			} else {
+				atomic.AddUint64(&readCount, 1)
 			}
 		}
 	}

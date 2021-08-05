@@ -75,7 +75,7 @@ func main() {
 			errSinceLastInterval := currErrCount - lastErrCount
 
 			var errRate float64
-			if readSinceLastInterval > 0 {
+			if readSinceLastInterval != 0 || errSinceLastInterval != 0 {
 				errRate = (float64(errSinceLastInterval) / (float64(readSinceLastInterval) + float64(errSinceLastInterval))) * 100
 			}
 
@@ -92,9 +92,9 @@ func main() {
 			// Sample print errors.
 			if atomic.LoadUint64(&errCount)%20 == 0 {
 				fmt.Println(err)
-			} else {
-				atomic.AddUint64(&readCount, 1)
 			}
+		} else {
+			atomic.AddUint64(&readCount, 1)
 		}
 	}
 

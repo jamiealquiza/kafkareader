@@ -89,7 +89,10 @@ func main() {
 		atomic.AddUint64(&readCount, 1)
 		if err != nil {
 			atomic.AddUint64(&errCount, 1)
-			fmt.Println(err)
+			// Sample errors.
+			if atomic.LoadUint64(&errCount)%20==0 {
+				fmt.Println(err)
+			}
 		}
 	}
 
